@@ -20,13 +20,13 @@ exports.getOneSauce= (req, res, next) => {
 exports.createSauce = (req, res, next) => {
   const saucesObject = JSON.parse(req.body.sauces);
   delete saucesObject._id;
-  const thing = new Sauces({
+  const sauces = new Sauces({
     ...saucesObject,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   });
-  thing.save()
+  sauces.save()
   .then(() => res.status(201).json({ message: 'Sauce enregistrée !'}))
-  .catch((error) => res.status(400).json({ error: error}));
+  .catch((error) => res.status(400).json({error: error}));
 };
 
 exports.modifySauces = (req, res, next) => {
