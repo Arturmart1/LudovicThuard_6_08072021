@@ -67,23 +67,23 @@ exports.deleteSauces = (req, res, next) => {
 
 exports.rateSauces = (req, res, next) =>{
   if(req.body.like === 1){
-    Sauces.updateOne({ _id:req.params.id}, {$inc: {likes: req.params.likes}, $push: { userLiked: req.body.userId} })
-      .then(() => res.status(200).json({ message: 'Like ajouté' }))
+    Sauces.updateOne({ _id:req.params.id}, {$inc: {likes: req.params.likes++}, $push: { userLiked: req.body.userId} })
+      .then((sauces) => res.status(200).json({ message: 'Like ajouté' }))
       .catch(error => res.status(500).json({ error }))
   } else if (req.body.like === -1){
-    Sauces.updateOne({ _id: req.params.id}, {$inc: {dislikes: req.params.dislikes}, $push: {userLiked: req.body.userId}})
-    .then(() => res.status(200).json({ message: 'Dislike ajouté' }))
+    Sauces.updateOne({ _id: req.params.id}, {$inc: {dislikes: req.params.dislikes++}, $push: {userLiked: req.body.userId}})
+    .then((sauces) => res.status(200).json({ message: 'Dislike ajouté' }))
     .catch(error => res.status(500).json({ error }))
   } else {
     Sauces.findOne({ _id: req.params.id })
-        .then(sauce => {
+        .then(sauces => {
             if (sauce.usersLiked.includes(req.body.userId)) {
                 Sauces.updateOne({ _id: req.params.id }, { $pull: { usersLiked: req.body.userId }, $inc: { likes: -1 } })
-                    .then((sauce) => { res.status(200).json({ message: 'Like supprimé' }) })
+                    .then((sauces) => { res.status(200).json({ message: 'Like supprimé' }) })
                     .catch(error => res.status(500).json({ error }))
             } else if (sauce.usersDisliked.includes(req.body.userId)) {
                 Sauces.updateOne({ _id: req.params.id }, { $pull: { usersDisliked: req.body.userId }, $inc: { dislikes: -1 } })
-                    .then((sauce) => { res.status(200).json({ message: 'Dislike supprimé' }) })
+                    .then((sauces) => { res.status(200).json({ message: 'Dislike supprimé' }) })
                     .catch(error => res.status(500).json({ error }))
             }
         })
