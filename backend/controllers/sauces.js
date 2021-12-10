@@ -31,7 +31,7 @@ exports.createSauce = (req, res, next) => {
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   });
   sauces.save()
-  .then(() => res.status(201).json({ message: 'Sauce enregistrée !'}))
+  .then(() => res.status(201).json({ message: 'Sauce enregistrée !',}))
   .catch((error) => res.status(400).json({error: error}));
 };
 
@@ -63,30 +63,38 @@ exports.deleteSauces = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 };
 
-//Noter une sauce
+// Like or dislike a sauce, add or remove 1 to the likes or dislikes, only one like or dislike per user, display amount of likes and dislikes as users sum
+exports.rateSauces = (req, res, next) => {
+  Sauces.findOne({ _id: req.params.id })
+    .then(sauces => {
+      if (req.body.like === 1) {
+        sauces.likes += 1;
+        sauces.usersLiked.push(req.body.userId);
+      } else if (req.body.like === -1) {
+        sauces.dislikes += 1;
+        sauces.usersDisliked.push(req.body.userId);
+      } else if (req.body.like === 0) {
+        sauces.usersLiked.forEach(user => {
+          if (user == req.body.userId){
+            sauces.likes -= 1;
+            sauces.usersLiked.splice(sauces.usersLiked.indexOf(req.body.userId), 1);
+          }
+      });
+      sauces.usersDisliked.forEach(user => {
+        if (user == req.body.userId){
+          sauces.dislikes -= 1;
+          sauces.usersDisliked.splice(sauces.usersDisliked.indexOf(req.body.userId), 1);
+        }
+      });
+    }
+    Sauces.updateOne({_id: req.params.id}, sauces)
+      .then(() => res.status(201).json({message: 'Sauce mofifiée !'}))
+      .catch((error) => res.status(400).json({error: error}));
+    })
+  .catch(error => res.status(500).json({ error }));
+};
 
-exports.rateSauces = (req, res, next) =>{
-  if(req.body.like === 1){
-    Sauces.updateOne({ _id:req.params.id}, {$inc: {likes: req.params.likes++}, $push: { userLiked: req.body.userId} })
-      .then((sauces) => res.status(200).json({ message: 'Like ajouté' }))
-      .catch(error => res.status(500).json({ error }))
-  } else if (req.body.like === -1){
-    Sauces.updateOne({ _id: req.params.id}, {$inc: {dislikes: req.params.dislikes++}, $push: {userLiked: req.body.userId}})
-    .then((sauces) => res.status(200).json({ message: 'Dislike ajouté' }))
-    .catch(error => res.status(500).json({ error }))
-  } else {
-    Sauces.findOne({ _id: req.params.id })
-        .then(sauces => {
-            if (sauce.usersLiked.includes(req.body.userId)) {
-                Sauces.updateOne({ _id: req.params.id }, { $pull: { usersLiked: req.body.userId }, $inc: { likes: -1 } })
-                    .then((sauces) => { res.status(200).json({ message: 'Like supprimé' }) })
-                    .catch(error => res.status(500).json({ error }))
-            } else if (sauce.usersDisliked.includes(req.body.userId)) {
-                Sauces.updateOne({ _id: req.params.id }, { $pull: { usersDisliked: req.body.userId }, $inc: { dislikes: -1 } })
-                    .then((sauces) => { res.status(200).json({ message: 'Dislike supprimé' }) })
-                    .catch(error => res.status(500).json({ error }))
-            }
-        })
-        .catch(error => res.status(500).json({ error }))
-  }
-}
+//A FAIRE
+// FAIRE GESTION DES LIKES
+// Essayer de trouver la faille de l'authentification
+// Regarder vidéo JWTOKEN TRAINIG dev
