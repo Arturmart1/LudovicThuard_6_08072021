@@ -63,7 +63,8 @@ exports.deleteSauces = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 };
 
-// Like or dislike a sauce, add or remove 1 to the likes or dislikes, only one like or dislike per user, display amount of likes and dislikes as users sum
+// Notation d'une sauce
+
 exports.rateSauces = (req, res, next) => {
   Sauces.findOne({ _id: req.params.id })
     .then(sauces => {
