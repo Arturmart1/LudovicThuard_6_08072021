@@ -4,9 +4,14 @@ const mongoose = require('mongoose');
 const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
 const path = require('path');
+const dotenv = require('dotenv');
 
-mongoose.connect('mongodb+srv://Ludovic:C2245lth@test.qwua6.mongodb.net/test?retryWrites=true&w=majority',
-  { useNewUrlParser: true,
+dotenv.config();
+
+const mongoConnect = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.qwua6.mongodb.net/${process.env.DB_NAME}?${process.env.DB_SET}`
+
+mongoose.connect(mongoConnect, {
+  useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
