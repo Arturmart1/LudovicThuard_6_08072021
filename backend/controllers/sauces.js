@@ -39,6 +39,7 @@ exports.createSauce = (req, res, next) => {
 
 exports.modifySauces = (req, res, next) => {
   const saucesObject = req.file ?
+  // sauce.findone verifier req body token user id =  sauce.user id
     { 
       ...JSON.parse(req.body.sauces),
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -49,7 +50,7 @@ exports.modifySauces = (req, res, next) => {
 };
 
 //Suppression d'une sauce
-
+//Ajouter verification user
 exports.deleteSauces = (req, res, next) => {
   Sauces.findOne({ _id: req.params.id })
     .then(sauces => {
@@ -68,34 +69,24 @@ exports.deleteSauces = (req, res, next) => {
 exports.rateSauces = (req, res, next) => {
   Sauces.findOne({ _id: req.params.id })
     .then(sauces => {
-      if (req.body.like === 1) {
-        sauces.likes += 1;
-        sauces.usersLiked.push(req.body.userId);
-      } else if (req.body.like === -1) {
-        sauces.dislikes += 1;
-        sauces.usersDisliked.push(req.body.userId);
-      } else if (req.body.like === 0) {
-        sauces.usersLiked.forEach(user => {
-          if (user == req.body.userId){
-            sauces.likes -= 1;
-            sauces.usersLiked.splice(sauces.usersLiked.indexOf(req.body.userId), 1);
-          }
-      });
-      sauces.usersDisliked.forEach(user => {
-        if (user == req.body.userId){
-          sauces.dislikes -= 1;
-          sauces.usersDisliked.splice(sauces.usersDisliked.indexOf(req.body.userId), 1);
-        }
-      });
+      switch (req.body.likes) {
+        case 1:
+          if (!sauces.usersLiked.include(req.body.userId)) sauces.usersLiked.push(req.body.userId);
+          if (sauces.usersDisliked.include(req.body.userId)) sauces.usersDisliked = sauces.usersDisliked.filter(value => value!=req.body.userId);
+
+        case 0:
+          if (sauces.usersLiked.include(req.body.userId)) sauces.userLiked = sauces.usersLiked.filter(value => value!=req.body.userId);
+          if (sauces.usersDisliked.include(req.body.userId)) sauces.userDisliked = sauces.usersDisliked.filter(value => value!=req.body.userId);
+
+        case -1:
+          if (!sauces.usersDisliked.include(req.body.userId)) sauces.usersDisliked.push(req.body.userId);
+          if (sauces.usersLiked.include(req.body.userId)) sauces.usersLiked = sauces.usersLiked.filter(value => value!=req.body.userId);
     }
+    sauces.likes = sauces.usersLiked.length;
+    sauces.dislikes = sauces.usersDisliked.length;
     Sauces.updateOne({_id: req.params.id}, sauces)
       .then(() => res.status(201).json({message: 'Sauce mofifiée !'}))
       .catch((error) => res.status(400).json({error: error}));
     })
   .catch(error => res.status(500).json({ error }));
 };
-
-//A FAIRE
-// FAIRE GESTION DES LIKES
-// Essayer de trouver la faille de l'authentification
-// Regarder vidéo JWTOKEN TRAINIG dev
