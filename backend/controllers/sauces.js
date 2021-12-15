@@ -5,8 +5,8 @@ const fs = require('fs');
 
 exports.getAllSauces = (req, res, next) => {
     Sauces.find()
-    .then((sauces) => { res.status(200).json(sauces)})
-    .catch((error) => { res.status(404).json({ error: error});
+      .then((Sauces) => { res.status(200).json(Sauces)})
+      .catch((error) => { res.status(404).json({ error: error});
     }
   );
 };
@@ -38,8 +38,8 @@ exports.createSauce = (req, res, next) => {
 //Modification d'une sauce
 
 exports.modifySauces = (req, res, next) => {
+  Sauces.findOne({ _id: req.params.id, userId: req.body.token.userId === req.body.userId })// sauce.findone verifier req body token user id =  sauce.user id
   const saucesObject = req.file ?
-  // sauce.findone verifier req body token user id =  sauce.user id
     { 
       ...JSON.parse(req.body.sauces),
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -50,9 +50,9 @@ exports.modifySauces = (req, res, next) => {
 };
 
 //Suppression d'une sauce
-//Ajouter verification user
+
 exports.deleteSauces = (req, res, next) => {
-  Sauces.findOne({ _id: req.params.id })
+  Sauces.findOne({ _id: req.params.id, userId: req.body.token.userId === req.body.userId })
     .then(sauces => {
       const filename = sauces.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
@@ -69,7 +69,7 @@ exports.deleteSauces = (req, res, next) => {
 exports.rateSauces = (req, res, next) => {
   Sauces.findOne({ _id: req.params.id })
     .then(sauces => {
-      switch (req.body.likes) {
+      switch (req.body.like) {
         case 1:
           if (!sauces.usersLiked.include(req.body.userId)) sauces.usersLiked.push(req.body.userId);
           if (sauces.usersDisliked.include(req.body.userId)) sauces.usersDisliked = sauces.usersDisliked.filter(value => value!=req.body.userId);
@@ -85,8 +85,8 @@ exports.rateSauces = (req, res, next) => {
     sauces.likes = sauces.usersLiked.length;
     sauces.dislikes = sauces.usersDisliked.length;
     Sauces.updateOne({_id: req.params.id}, sauces)
-      .then(() => res.status(201).json({message: 'Sauce mofifiée !'}))
+      .then(() => res.status(201).json({message: 'Sauce notée !'}))
       .catch((error) => res.status(400).json({error: error}));
     })
-  .catch(error => res.status(500).json({ error }));
+  .catch(error => res.status(500).json({ error: error }));
 };
