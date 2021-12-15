@@ -69,7 +69,7 @@ exports.deleteSauces = (req, res, next) => {
 exports.rateSauces = (req, res, next) => {
   Sauces.findOne({ _id: req.params.id })
     .then(sauces => {
-      switch (req.body.like) {
+      switch (req.body.likes) {
         case 1:
           if (!sauces.usersLiked.include(req.body.userId)) sauces.usersLiked.push(req.body.userId);
           if (sauces.usersDisliked.include(req.body.userId)) sauces.usersDisliked = sauces.usersDisliked.filter(value => value!=req.body.userId);
