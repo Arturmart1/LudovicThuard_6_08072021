@@ -19,7 +19,6 @@ exports.signup = (req, res, next) => {
         .catch(error => res.status(500).json({error}));
 };
 
-//Login user hash password, verify password and create token
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })
     .then(user => {
