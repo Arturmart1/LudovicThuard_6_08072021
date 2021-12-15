@@ -69,18 +69,22 @@ exports.deleteSauces = (req, res, next) => {
 exports.rateSauces = (req, res, next) => {
   Sauces.findOne({ _id: req.params.id })
     .then(sauces => {
-      switch (req.body.likes) {
+      switch (req.body.like) {
         case 1:
-          if (!sauces.usersLiked.include(req.body.userId)) sauces.usersLiked.push(req.body.userId);
-          if (sauces.usersDisliked.include(req.body.userId)) sauces.usersDisliked = sauces.usersDisliked.filter(value => value!=req.body.userId);
+          if (!sauces.usersLiked.includes(req.body.userId)) sauces.usersLiked.push(req.body.userId);
+          if (sauces.usersDisliked.includes(req.body.userId)) sauces.usersDisliked = sauces.usersDisliked.filter(value => value!=req.body.userId);
+          break;
 
         case 0:
-          if (sauces.usersLiked.include(req.body.userId)) sauces.userLiked = sauces.usersLiked.filter(value => value!=req.body.userId);
-          if (sauces.usersDisliked.include(req.body.userId)) sauces.userDisliked = sauces.usersDisliked.filter(value => value!=req.body.userId);
+          if (sauces.usersLiked.includes(req.body.userId)) sauces.usersLiked = sauces.usersLiked.filter(value => value!=req.body.userId);
+          if (sauces.usersDisliked.includes(req.body.userId)) sauces.usersDisliked = sauces.usersDisliked.filter(value => value!=req.body.userId);
+          break;
 
         case -1:
-          if (!sauces.usersDisliked.include(req.body.userId)) sauces.usersDisliked.push(req.body.userId);
-          if (sauces.usersLiked.include(req.body.userId)) sauces.usersLiked = sauces.usersLiked.filter(value => value!=req.body.userId);
+          if (!sauces.usersDisliked.includes(req.body.userId)) sauces.usersDisliked.push(req.body.userId);
+          if (sauces.usersLiked.includes(req.body.userId)) sauces.usersLiked = sauces.usersLiked.filter(value => value!=req.body.userId);
+          break;
+
     }
     sauces.likes = sauces.usersLiked.length;
     sauces.dislikes = sauces.usersDisliked.length;
@@ -88,5 +92,5 @@ exports.rateSauces = (req, res, next) => {
       .then(() => res.status(201).json({message: 'Sauce notée !'}))
       .catch((error) => res.status(400).json({error: error}));
     })
-  .catch(error => res.status(500).json({ error: error }));
+    .catch(error => res.status(500).json({ error: error }));
 };
