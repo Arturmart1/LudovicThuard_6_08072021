@@ -1,5 +1,5 @@
 const Sauces = require('../models/Sauces')
-const fs = require('fs'); 
+const fs = require('fs');
 
 //Récuperation des sauces
 
@@ -38,7 +38,7 @@ exports.createSauce = (req, res, next) => {
 //Modification d'une sauce
 
 exports.modifySauces = (req, res, next) => {
-  Sauces.findOne({ _id: req.params.id, userId: req.body.token.userId})// sauce.findone verifier req body token user id =  sauce.user id
+  Sauces.findOne({ _id: req.params.id, userId: req.token.userId })
   const saucesObject = req.file ?
     { 
       ...JSON.parse(req.body.sauces),
@@ -52,7 +52,7 @@ exports.modifySauces = (req, res, next) => {
 //Suppression d'une sauce
 
 exports.deleteSauces = (req, res, next) => {
-  Sauces.findOne({ _id: req.params.id, userId: req.body.token.userId})
+  Sauces.findOne({ _id: req.params.id, userId: req.token.userId })
     .then(sauces => {
       const filename = sauces.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
