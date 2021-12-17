@@ -38,15 +38,22 @@ exports.createSauce = (req, res, next) => {
 //Modification d'une sauce
 
 exports.modifySauces = (req, res, next) => {
-  Sauces.findOne({ _id: req.params.id, userId: req.token.userId })
-  const saucesObject = req.file ?
-    { 
-      ...JSON.parse(req.body.sauces),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
-  Sauces.updateOne({_id: req.params.id}, {...saucesObject, _id: req.params.id})
-  .then(() => res.status(201).json({message: 'Sauce mofifiée !'}))
-  .catch((error) => res.status(400).json({error: error}));
+  Sauces.findOne({ _id: req.params.id})
+    .then(userId => {
+      if (userId === req.token.userId) {
+        const saucesObject = req.file ?
+        { 
+          ...JSON.parse(req.body.sauces),
+          imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        } : { ...req.body };
+        Sauces.updateOne({_id: req.params.id}, {...saucesObject, _id: req.params.id})
+          .then(() => res.status(201).json({message: 'Sauce mofifiée !'}))
+          .catch((error) => res.status(400).json({error: error}));
+      } else{
+        return res.status(403).json({ error: 'Vous n\'avez pas le droit de modifier cette sauce'});
+      }
+    })
+    .catch((error) => res.status(500).json({ error: error}));
 };
 
 //Suppression d'une sauce
@@ -84,7 +91,8 @@ exports.rateSauces = (req, res, next) => {
           if (!sauces.usersDisliked.includes(req.body.userId)) sauces.usersDisliked.push(req.body.userId);
           if (sauces.usersLiked.includes(req.body.userId)) sauces.usersLiked = sauces.usersLiked.filter(value => value!=req.body.userId);
           break;
-
+        default:
+          res.status(400).json({ message : 'Bad request'});
     }
     sauces.likes = sauces.usersLiked.length;
     sauces.dislikes = sauces.usersDisliked.length;
