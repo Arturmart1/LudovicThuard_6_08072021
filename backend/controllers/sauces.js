@@ -92,7 +92,7 @@ exports.rateSauces = (req, res, next) => {
           if (sauces.usersLiked.includes(req.body.userId)) sauces.usersLiked = sauces.usersLiked.filter(value => value!=req.body.userId);
           break;
         default:
-          res.status(400).json({ message : 'Bad request'});
+          res.status(403).json({ message : 'Bad request'});
     }
     sauces.likes = sauces.usersLiked.length;
     sauces.dislikes = sauces.usersDisliked.length;
