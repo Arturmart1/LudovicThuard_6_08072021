@@ -6,6 +6,7 @@ const userRoutes = require('./routes/user');
 const path = require('path');
 const RateLimit = require('express-rate-limit');
 const MongoStore = require('rate-limit-mongo');
+const helmet = require("helmet");
 
 //Connection à la base de données
 
@@ -45,6 +46,7 @@ app.use((req, res, next) => {
   });
 
 //Utilitaires
+app.use(helmet());
 
 app.use(bodyParser.json());
 
