@@ -34,7 +34,7 @@ const limiter = new RateLimit({
   windowMs: 15 * 60 * 1000
 });
 
-app.use(limiter);
+app.use(limiter); //Prevent 01 OWASP attack
 
 //CORS
 
@@ -46,7 +46,7 @@ app.use((req, res, next) => {
   });
 
 //Utilitaires
-app.use(helmet());
+app.use(helmet()); //Prevent 02 Owasp attack
 
 app.use(bodyParser.json());
 

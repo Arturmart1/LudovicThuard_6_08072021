@@ -2,6 +2,10 @@ const Sauces = require('../models/Sauces')
 const fs = require('fs');
 
 //Récuperation des sauces
+/**
+ * @api {get} /sauces 
+ * @param {Sauces} /Renvoie toutes les sauces de la base de données 
+ */
 
 exports.getAllSauces = (req, res, next) => {
     Sauces.find()
@@ -28,7 +32,7 @@ exports.createSauce = (req, res, next) => {
   delete saucesObject._id;
   const sauces = new Sauces({
     ...saucesObject,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` //Protocole image multer
   });
   sauces.save()
   .then(() => res.status(201).json({ message: 'Sauce enregistrée !',}))
