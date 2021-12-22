@@ -3,6 +3,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 
 //Création d'un utilisteur
+/**
+ * @param {hash} /Hash du mot de passe
+ * @param {user.save} /Sauvegarde l'utilisateur
+ */
 
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
@@ -19,6 +23,11 @@ exports.signup = (req, res, next) => {
 };
 
 //Connection au site pour un utilisateur enregistré
+/**
+ * @param {user.findOne} /Trouve l'utilisateur dans la DB
+ * @param {bcrypt.compare} /Compare le hash du mot de passe
+ * @param {res} /Renvoi le useId et le token
+ */
 
 exports.login = (req, res, next) => {
   User.findOne({ email: req.body.email })

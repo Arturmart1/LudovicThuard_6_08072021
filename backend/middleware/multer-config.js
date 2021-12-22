@@ -1,5 +1,11 @@
 //Middleware de gestion de l'upload des images
 
+/**
+ * @constant {MIME_TYPES} / Type de fichier autorisés
+ * @param {destination} / Callback du dossier de stockage
+ * @param {filename} / Callback du nom du fichier et de son extension
+ */
+
 const multer = require('multer');
 
 const MIME_TYPES = {

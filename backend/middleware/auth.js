@@ -1,7 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 //Middleware d'authentification
-
+/**
+ * @const {token} /Récupere le token dans la requête d'authentification 
+ * @param {token} req /Vérifie le token 
+ * @param {*} next 
+ */
 module.exports = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];

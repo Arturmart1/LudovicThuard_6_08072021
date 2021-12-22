@@ -8,7 +8,6 @@ const RateLimit = require('express-rate-limit');
 const MongoStore = require('rate-limit-mongo');
 const helmet = require("helmet");
 const emailValidator = require("email-validator");
-const passwordValidator = require('password-validator');
 
 //Connection à la base de données
 
@@ -56,8 +55,6 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/api/sauces', saucesRoutes);
 app.use('/api/auth', userRoutes);
-
-app.use(passwordValidator());
 
 emailValidator.validate("test@mail.com");
 
