@@ -1,3 +1,5 @@
+//Import des modules
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -30,7 +32,8 @@ app.use((req, res, next) => {
   });
 
 //Utilitaires
-app.use(helmet()); //Prevent 02 Owasp attack
+
+app.use(helmet());
 
 app.use(bodyParser.json());
 

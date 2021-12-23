@@ -1,6 +1,8 @@
-//Modèle de données d'une sauce
+//Import de mangoose
 
 const mongoose = require('mongoose');
+
+//Définition du schéma Sauces
 
 const saucesSchema = mongoose.Schema({
     userId: { type: String, required: true },
@@ -15,5 +17,7 @@ const saucesSchema = mongoose.Schema({
     usersLiked: { type: [String]},
     usersDisliked: { type: [String]},
 });
+
+//Export du schéma
 
 module.exports = mongoose.model('Sauces', saucesSchema);
