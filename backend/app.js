@@ -1,7 +1,7 @@
 //Import des modules
 
 const express = require('express');
-const bodyParser = require('body-parser');
+
 const mongoose = require('mongoose');
 const saucesRoutes = require('./routes/sauces');
 const userRoutes = require('./routes/user');
@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 
 app.use(helmet());
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 

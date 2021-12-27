@@ -45,7 +45,7 @@ exports.createSauce = (req, res, next) => {
   });
   sauces.save()
   .then(() => res.status(201).json({ message: 'Sauce enregistrée !',}))
-  .catch((error) => res.status(400).json({error: error}));
+  .catch((error) => res.status(403).json({error: error, message: "Vous n'avez pas les droits pour modifier cette sauce"}));
 };
 
 //Modification d'une sauce
@@ -56,24 +56,18 @@ exports.createSauce = (req, res, next) => {
  * @param {updateOne} /Sauvegarde les nouvelles données
  */
 
+//modify sauce, check if user is the owner with token
 exports.modifySauces = (req, res, next) => {
-  Sauces.findOne({ _id: req.params.id})
-    .then(userId => {
-      if (userId === req.token.userId) {
-        const saucesObject = req.file ?
-        { 
-          ...JSON.parse(req.body.sauces),
-          imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-        } : { ...req.body };
-        Sauces.updateOne({_id: req.params.id}, {...saucesObject, _id: req.params.id})
-          .then(() => res.status(201).json({message: 'Sauce mofifiée !'}))
-          .catch((error) => res.status(400).json({error: error}));
-      } else{
-        return res.status(403).json({ error: 'Vous n\'avez pas le droit de modifier cette sauce'});
-      }
-    })
-    .catch((error) => res.status(500).json({ error: error}));
+  const sauceObject = req.file ?
+    {
+      ...JSON.parse(req.body.sauce),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
+  Sauces.updateOne({ _id: req.params.id, userId: req.token.userId }, { ...sauceObject })
+    .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
+    .catch((error) => res.status(400).json({error: error}));
 };
+
 
 //Suppression d'une sauce
 /**
